@@ -1,4 +1,4 @@
-async function main() {
+async function getProducts() {
     // Call API to get products
     await fetch('http://localhost:3000/api/products', {
         method: "GET",
@@ -22,6 +22,7 @@ async function main() {
 
 function displayProducts(products) {
     const parent = document.getElementById("items");
+
     for (const product of products) {
         //create elements
         const link = document.createElement('a');
@@ -44,4 +45,4 @@ function displayProducts(products) {
     }
 }
 
-main().then(r => console.log(r));
+getProducts().then(r => console.log(r));

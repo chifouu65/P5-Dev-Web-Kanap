@@ -1,17 +1,15 @@
-//------Modele d'objet pour les produits selectionnes
-async function main() {
-    await product.addToCart()
-        .then(r => { console.log(r)});
-    await product.displayProduct()
-        .then(r => console.log(r));
+async function load() {
+    await Product.addToCart();
+    await Product.displayProduct();
 }
 
-class product {
-    constructor(productId, color, quantity) {
-            this.id = productId,
+export default class Product {
+    constructor(Id, color, quantity) {
+            this.id = Id,
             this.colors = color,
             this.quantity = quantity
     }
+
     static getId() {
         const url = new URL(window.location.href);
         const params = new URLSearchParams(url.search);
@@ -23,19 +21,17 @@ class product {
     }
 
     static async getProductData() {
-        const productId = product.getId();
+        const Id = Product.getId();
         try {
-            const response = await fetch(`http://localhost:3000/api/products/${productId}`);
-            // convertion de la reponse au format json
+            const response = await fetch(`http://localhost:3000/api/products/${Id}`);
             return await response.json();
         } catch (e) {
             console.log("Erreur lors de l'appel du serveur " + e);
-            alert("Erreur lors de l'appel du serveur ");
         }
     }
 
     static async displayProduct() {
-        const data = await product.getProductData();
+        const data = await Product.getProductData();
         document.getElementById('title').textContent = data.name;
         document.getElementById('price').textContent = data.price;
         document.getElementById('description').textContent = data.description;
@@ -48,24 +44,25 @@ class product {
         colors.forEach(item => {
             colorRender += `<option value="${item}">${item}</option>`;
         });
-        // injection du rendu dans l'html
+        // injection in html
         document.getElementById('colors').innerHTML = colorRender;
     }
 
     static async addToCart() {
-        const productData = await product.getProductData();
+        const productData = await Product.getProductData();
         const btn = document.querySelector('#addToCart');
         const selectedColor = document.querySelector('#colors');
         const selectedQuantity = document.querySelector('#quantity');
 
         btn.addEventListener('click', (e) => {
             e.preventDefault();
+            const max = 10;
             const min = 1;
-            const max = 100;
-            const select = new product(
+            const quantity = selectedQuantity.value;
+            const select = new Product(
                 productData._id,
                 selectedColor.value,
-                Number(selectedQuantity.value)
+                Number(quantity)
             );
             if (select.quantity >= min && select.quantity <= max) {
                 let orders = [select];
@@ -74,14 +71,13 @@ class product {
                 }
                 orders.push(select);
                 localStorage.setItem('orders', JSON.stringify(orders));
-                alert('Produit ajouté au panier');
-
+                alert('Le produit a été ajouté au panier');
             } else {
-                alert(`selectionnez entre ${min} et ${max} produits`);
+                alert(`Erreur veuillez selectionnez un nombre d'article(s) entre ${min} et ${max}.`);
             }
         })
     }
 };
 
-main();
+load();
 
