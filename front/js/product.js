@@ -3,12 +3,12 @@ async function load() {
     await Product.displayProduct();
 }
 
-export default class Product {
+class Product {
     constructor(Id, color, quantity) {
-            this.id = Id,
-            this.colors = color,
-            this.quantity = quantity
-    }
+            this.id = Id;
+            this.colors = color;
+            this.quantity = quantity;
+    };
 
     static getId() {
         const url = new URL(window.location.href);
@@ -18,26 +18,24 @@ export default class Product {
         } else {
             alert('Id not found');
         }
-    }
+    };
 
     static async getProductData() {
         const Id = Product.getId();
         try {
             const response = await fetch(`http://localhost:3000/api/products/${Id}`);
-            return await response.json();
+            return response.json();
         } catch (e) {
-            console.log("Error " + e);
+            alert("Error " + e);
         }
-    }
+    };
 
     static async displayProduct() {
         const data = await Product.getProductData();
-        document.getElementById('title').textContent = data.name;
-        document.getElementById('price').textContent = data.price;
-        document.getElementById('description').textContent = data.description;
-        document.querySelector('.item__img').innerHTML = `
-            <img src="${data.imageUrl}" alt="${data.altTxt}">
-        `;
+        document.querySelector('#title').textContent = data.name;
+        document.querySelector('#price').textContent = data.price;
+        document.querySelector('#description').textContent = data.description;
+        document.querySelector('.item__img').innerHTML = `<img src="${data.imageUrl}" alt="${data.altTxt}">`;
 
         const colors = data.colors;
         let colorRender = '';
@@ -45,8 +43,8 @@ export default class Product {
             colorRender += `<option value="${item}">${item}</option>`;
         });
         // injection in html
-        document.getElementById('colors').innerHTML = colorRender;
-    }
+        document.querySelector('#colors').innerHTML = colorRender;
+    };
 
     static async addToCart() {
         const productData = await Product.getProductData();
@@ -65,19 +63,22 @@ export default class Product {
                 Number(quantity)
             );
             if (select.quantity >= min && select.quantity <= max) {
-                let orders = [select];
+                let orders = [];
                 if (localStorage.getItem('orders')) {
                     orders = JSON.parse(localStorage.getItem('orders'));
                 }
                 orders.push(select);
                 localStorage.setItem('orders', JSON.stringify(orders));
-                alert('Le produit a été ajouté au panier');
+                console.log(select);
+                console.log(orders);
             } else {
                 alert(`Erreur veuillez selectionnez un nombre d'article(s) entre ${min} et ${max}.`);
             }
-        })
-    }
-};
+        });
+    };
+}
 
-load();
+
+
+load().then(() => console.log("Page loaded")).catch(e => console.log(e));
 
