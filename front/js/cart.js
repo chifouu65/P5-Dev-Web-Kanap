@@ -20,7 +20,7 @@ async function getProductData(id) {
         displayCart().catch((err) => console.log(err));
         total().catch((err) => console.log(err));
         setInterval(() => {
-            removeProductInCart();
+            removeProductInCart().catch((err) => console.log(err));
         }, 10);
     }
 })();
@@ -101,14 +101,17 @@ async function displayCart() {
     });
 })();
 
-function removeProductInCart() {
-    const btnDelete = document.querySelectorAll('p.deleteItem');
+async function removeProductInCart() {
+    const btnDelete = await document.querySelectorAll('p.deleteItem');
     for (let btn of btnDelete) {
         btn.addEventListener('click', (e) => {
             //get id & color of product click
             const id = e.target.parentNode.parentNode.parentNode.parentNode.dataset.id;
             const color = e.target.parentNode.parentNode.parentNode.parentNode.dataset.color;
             //remove product in storage
+            //reload page if cart is empty
+
+
             for (let i = 0; i < storage.length; i++) {
                 if (storage[i].id === id && storage[i].colors === color) {
                     console.log(storage[i]);
@@ -117,8 +120,11 @@ function removeProductInCart() {
                     console.log(storage);
                     const article = e.target.parentNode.parentNode.parentNode.parentNode;
                     article.remove();
+                    total().catch((err) => console.log(err));
+                    if (storage.length === 0) {
+                        window.location.reload();
+                    }
                 }
-                total().catch((err) => console.log(err));
             }
         });
     }
