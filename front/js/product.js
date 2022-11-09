@@ -4,6 +4,7 @@ async function load() {
 }
 
 class Product {
+
     constructor(Id, color, quantity) {
             this.id = Id;
             this.colors = color;
@@ -63,14 +64,27 @@ class Product {
                 Number(quantity)
             );
             if (select.quantity >= min && select.quantity <= max) {
-                let orders = [];
-                if (localStorage.getItem('orders')) {
-                    orders = JSON.parse(localStorage.getItem('orders'));
+                //check if new product is already in cart
+                const order = JSON.parse(localStorage.getItem('orders'));
+                if (order) {
+                    const product = order.find(item => item.id === select.id && item.colors === select.colors);
+                    if (product) {
+                        product.quantity += select.quantity;
+                        localStorage.setItem('orders', JSON.stringify(order));
+                        alert('Produit déja dans le panier, quantité mise à jour');
+                    } else {
+                        order.push(select);
+                        localStorage.setItem('orders', JSON.stringify(order));
+                        alert('Produit ajouté au panier');
+                    }
                 }
-                orders.push(select);
-                localStorage.setItem('orders', JSON.stringify(orders));
-                console.log(select);
-                console.log(orders);
+                //if cart is empty
+                else {
+                    const order = [];
+                    order.push(select);
+                    localStorage.setItem('orders', JSON.stringify(order));
+                    console.log("product added");
+                }
             } else {
                 alert(`Erreur veuillez selectionnez un nombre d'article(s) entre ${min} et ${max}.`);
             }
