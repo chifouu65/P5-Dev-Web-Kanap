@@ -1,15 +1,16 @@
-async function getProducts() {
+(async function getProducts() {
     // Call API to get products
-    await fetch('http://localhost:3000/api/products', {
+    return await fetch('http://localhost:3000/api/products', {
         method: "GET",
         headers: {
             'Content-Type': 'application/json'
         }
     })
         .then(result => {
-            if (result.ok) {
-                return result.json();
+            if (!result.ok) {
+                alert('Erreur : ' + result.status);
             }
+            return result.json();
         })
         .then(
             products => displayProducts(products)
@@ -18,11 +19,9 @@ async function getProducts() {
                 console.log(`Error for fetch all products : ${err}`)
             }
         );
-}
-
+})();
 function displayProducts(products) {
     const parent = document.getElementById("items");
-
     for (const product of products) {
         //create elements
         const link = document.createElement('a');
@@ -44,5 +43,3 @@ function displayProducts(products) {
         article.appendChild(description);
     }
 }
-
-getProducts();
