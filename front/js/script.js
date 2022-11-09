@@ -45,4 +45,4 @@ function displayProducts(products) {
     }
 }
 
-getProducts().then(r => console.log(r));
+getProducts();

@@ -16,7 +16,7 @@ export default class Product {
         if (params.get('id')) {
             return params.get('id');
         } else {
-            alert('Aucun produit selectionné');
+            alert('Id not found');
         }
     }
 
@@ -26,7 +26,7 @@ export default class Product {
             const response = await fetch(`http://localhost:3000/api/products/${Id}`);
             return await response.json();
         } catch (e) {
-            console.log("Erreur lors de l'appel du serveur " + e);
+            console.log("Error " + e);
         }
     }
 
