@@ -15,7 +15,6 @@ function urlOrderParams() {
 // Get the order ID from the URL and display order in the HTML
 (async function load() {
     const order = urlOrderParams();
-
     document.querySelector('#orderId').textContent = order;
     localStorage.clear();
 })();

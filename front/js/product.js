@@ -4,11 +4,10 @@ async function load() {
 }
 
 class Product {
-
     constructor(Id, color, quantity) {
-            this.id = Id;
-            this.colors = color;
-            this.quantity = quantity;
+        this.id = Id;
+        this.colors = color;
+        this.quantity = quantity;
     };
 
     static getId() {
@@ -37,7 +36,6 @@ class Product {
         document.querySelector('#price').textContent = data.price;
         document.querySelector('#description').textContent = data.description;
         document.querySelector('.item__img').innerHTML = `<img src="${data.imageUrl}" alt="${data.altTxt}">`;
-
         const colors = data.colors;
         let colorRender = '';
         colors.forEach(item => {
@@ -45,6 +43,9 @@ class Product {
         });
         // injection in html
         document.querySelector('#colors').innerHTML = colorRender;
+
+        //debug
+        console.log(`product data : ${data._id},name: ${data.name}, price: ${data.price}, description: ${data.description}, image: ${data.imageUrl}, alt: ${data.altTxt}`);
     };
 
     static async addToCart() {
@@ -55,7 +56,7 @@ class Product {
 
         btn.addEventListener('click', (e) => {
             e.preventDefault();
-            const max = 10;
+            const max = 100;
             const min = 1;
             const quantity = selectedQuantity.value;
             const select = new Product(
@@ -67,23 +68,31 @@ class Product {
                 //check if new product is already in cart
                 const order = JSON.parse(localStorage.getItem('orders'));
                 if (order) {
+                    //get product with same id and color
                     const product = order.find(item => item.id === select.id && item.colors === select.colors);
                     if (product) {
-                        product.quantity += select.quantity;
-                        localStorage.setItem('orders', JSON.stringify(order));
-                        alert('Produit déja dans le panier, quantité mise à jour');
+                        //check if quantity is not over 100
+                        if (product.quantity + select.quantity <= max) {
+                            product.quantity += select.quantity;
+                            localStorage.setItem('orders', JSON.stringify(order));
+                            console.log(product.quantity)
+                            alert('Product already in cart, quantity updated : ' + product.quantity );
+                            //set quantity to max
+                        } else {
+                            //edt quantity to max
+                            product.quantity = max;
+                            localStorage.setItem('orders', JSON.stringify(order));
+                            console.log(`product quantity updated to ${max} / quantity: ${product.quantity}`);
+                            alert(`You can't add more than ${max} items`);
+
+                        }
                     } else {
                         order.push(select);
                         localStorage.setItem('orders', JSON.stringify(order));
-                        alert('Produit ajouté au panier');
+                        console.log(`Produit ajouté au panier : ${JSON.stringify(select)}`);
+                        alert(`Product added to cart / id: ${select.id} / color: ${select.colors} / quantity: ${select.quantity}`);
+
                     }
-                }
-                //if cart is empty
-                else {
-                    const order = [];
-                    order.push(select);
-                    localStorage.setItem('orders', JSON.stringify(order));
-                    console.log("product added");
                 }
             } else {
                 alert(`Erreur veuillez selectionnez un nombre d'article(s) entre ${min} et ${max}.`);
@@ -91,7 +100,6 @@ class Product {
         });
     };
 }
-
 
 
 load().then(() => console.log("Page loaded")).catch(e => console.log(e));

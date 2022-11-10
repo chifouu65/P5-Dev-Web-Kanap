@@ -12,7 +12,6 @@ async function getProductData(id) {
 
 //control page
 (function load() {
-    console.log(storage);
     if (storage == null || storage.length === 0) {
         empty().catch((err) => console.log(err));
     } else if (storage !== 0) {
@@ -43,7 +42,6 @@ async function total() {
     document.querySelector('#totalPrice').innerHTML = amt;
 }
 
-//create empty cart
 async function empty() {
     document.querySelector('#empty').innerHTML = `<p>Votre panier est vide :( <br/><a href="index.html">Home</a></p>`;
     document.querySelector('.cart').hidden = true;
@@ -52,17 +50,21 @@ async function empty() {
 async function displayCart() {
     let render = "";
     for (let item of storage) {
+        //check size of product
         if (item.quantity >= 1 && item.quantity <= 100) {
             item.quantity = Number(item.quantity);
         } else if (item.quantity > 100) {
-            item.quantity = 100;
+            //if quantity > 100 => set quantity = 100
+           item.quantity = 100;
             localStorage.setItem('orders', JSON.stringify(storage));
         } else {
+            //if quantity < 1 => set quantity = 1
             item.quantity = 1;
             localStorage.setItem('orders', JSON.stringify(storage));
         }
 
         const data = await getProductData(item.id);
+
         const htmlRender = `      
            <article class="cart__item" data-id="${item.id}" data-color="${item.colors}">
                 <div class="cart__item__img">
@@ -101,16 +103,21 @@ async function removeProductInCart() {
             //remove product in storage
             //reload page if cart is empty
             for (let i = 0; i < storage.length; i++) {
+                //if id & color are the same in storage & input => remove product in storage
                 if (storage[i].id === id && storage[i].colors === color) {
-                    console.log(storage[i]);
                     storage.splice(i, 1);
                     localStorage.setItem('orders', JSON.stringify(storage));
                     const article = e.target.parentNode.parentNode.parentNode.parentNode;
                     article.remove();
                     total().catch((err) => console.log(err));
+                    //reload page if cart is empty
                     if (storage.length === 0) {
                         window.location.reload();
                     }
+                    //debug
+                    console.log(`Produit id: ${storage[i].id} // color: ${storage[i].colors} supprimé `);
+                    console.log(storage);
+
                 }
             }
         });
