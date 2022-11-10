@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c57da192-39ae-4e7d-98ff-2beac0af8e02" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front/js/cart.js" beforeDir="false" afterPath="$PROJECT_DIR$/front/js/cart.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +53,7 @@
       <workItem from="1667928288984" duration="3015000" />
       <workItem from="1667982559286" duration="26321000" />
       <workItem from="1668009407288" duration="15000" />
+      <workItem from="1668077413353" duration="2088000" />
     </task>
     <servers />
   </component>

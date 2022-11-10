@@ -19,9 +19,10 @@ async function getProductData(id) {
         //si il n'est pas vide
         displayCart().catch((err) => console.log(err));
         total().catch((err) => console.log(err));
-        setInterval(() => {
+        setTimeout(() => {
             removeProductInCart().catch((err) => console.log(err));
-        }, 10);
+            updateQuantity().catch((err) => console.log(err));
+        }, 1000);
     }
 })();
 
@@ -92,15 +93,6 @@ async function displayCart() {
     document.querySelector('#cart__items').innerHTML = render;
 }
 
-(function removeAllCarts() {
-    const deleteAllBtn = document.querySelector('#clearCart')
-
-    deleteAllBtn.addEventListener('click', () => {
-        localStorage.removeItem('orders');
-        window.location.reload();
-    });
-})();
-
 async function removeProductInCart() {
     const btnDelete = await document.querySelectorAll('p.deleteItem');
     for (let btn of btnDelete) {
@@ -110,8 +102,6 @@ async function removeProductInCart() {
             const color = e.target.parentNode.parentNode.parentNode.parentNode.dataset.color;
             //remove product in storage
             //reload page if cart is empty
-
-
             for (let i = 0; i < storage.length; i++) {
                 if (storage[i].id === id && storage[i].colors === color) {
                     console.log(storage[i]);
@@ -123,6 +113,34 @@ async function removeProductInCart() {
                     total().catch((err) => console.log(err));
                     if (storage.length === 0) {
                         window.location.reload();
+                    }
+                }
+            }
+        });
+    }
+}
+
+async function updateQuantity() {
+    const inputQty = document.querySelectorAll('input.itemQuantity');
+    console.log(inputQty);
+    for (let input of inputQty) {
+        //get id & color of product click
+        input.addEventListener('change', (e) => {
+            const id = e.target.parentNode.parentNode.parentNode.parentNode.dataset.id;
+            const color = e.target.parentNode.parentNode.parentNode.parentNode.dataset.color;
+            const qty = e.target.value;
+            console.log(id, color, qty);
+            for (let i = 0; i < storage.length; i++) {
+                //if id & color are the same in storage & input => update quantity in storage
+                if (storage[i].id === id && storage[i].colors === color) {
+                    //check if value is between 1 & 100
+                    if (qty >= 1 && qty <= 100) {
+                        storage[i].quantity = qty;
+                        localStorage.setItem('orders', JSON.stringify(storage));
+                        total().catch((err) => console.log(err));
+                    } else {
+                        alert("La quantité doit être comprise entre 1 et 100");
+                        e.target.value = storage[i].quantity;
                     }
                 }
             }
