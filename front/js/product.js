@@ -64,38 +64,37 @@ class Product {
                 selectedColor.value,
                 Number(quantity)
             );
-            if (select.quantity >= min && select.quantity <= max) {
-                //check if new product is already in cart
-                const order = JSON.parse(localStorage.getItem('orders'));
-                if (order) {
-                    //get product with same id and color
-                    const product = order.find(item => item.id === select.id && item.colors === select.colors);
-                    if (product) {
-                        //check if quantity is not over 100
-                        if (product.quantity + select.quantity <= max) {
-                            product.quantity += select.quantity;
-                            localStorage.setItem('orders', JSON.stringify(order));
-                            console.log(product.quantity)
-                            alert('Product already in cart, quantity updated : ' + product.quantity );
-                            //set quantity to max
+            console.log(select);
+            //check input size if is > 100 or < 1 yes alert else add to cart
+            if (quantity > max || quantity < min) {
+                alert('Quantity must be between 1 and 100');
+            } else {
+                //check if  product is already in cart if yes add quantity and update cart else add product to cart
+                if (localStorage.getItem('orders')) {
+                    const cart = JSON.parse(localStorage.getItem('orders'));
+                    const index = cart.findIndex(item => item.id === select.id && item.colors === select.colors);
+                    if (index > -1) {
+                        //check if quantity is > 100 if yes alert else add quantity and update cart
+                        if (cart[index].quantity + select.quantity > max) {
+                            alert('Quantity max = 100' + ' ' + ', Quantity in cart = ' + cart[index].quantity);
                         } else {
-                            //edt quantity to max
-                            product.quantity = max;
-                            localStorage.setItem('orders', JSON.stringify(order));
-                            console.log(`product quantity updated to ${max} / quantity: ${product.quantity}`);
-                            alert(`You can't add more than ${max} items`);
-
+                            cart[index].quantity += select.quantity;
+                            localStorage.setItem('orders', JSON.stringify(cart));
+                            alert('Product edit to cart');
                         }
                     } else {
-                        order.push(select);
-                        localStorage.setItem('orders', JSON.stringify(order));
-                        console.log(`Produit ajouté au panier : ${JSON.stringify(select)}`);
-                        alert(`Product added to cart / id: ${select.id} / color: ${select.colors} / quantity: ${select.quantity}`);
-
+                        cart.push(select);
                     }
+                    //debug
+                    console.log('Push product to cart');
+                    localStorage.setItem('orders', JSON.stringify(cart));
+                } else {
+                    const cart = [];
+                    cart.push(select);
+                    localStorage.setItem('orders', JSON.stringify(cart));
+                    alert('Product add to cart');
                 }
-            } else {
-                alert(`Erreur veuillez selectionnez un nombre d'article(s) entre ${min} et ${max}.`);
+
             }
         });
     };

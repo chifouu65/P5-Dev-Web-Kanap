@@ -16,7 +16,7 @@ async function getProductData(id) {
         empty().catch((err) => console.log(err));
     } else if (storage !== 0) {
         //si il n'est pas vide
-        displayCart().catch((err) => console.log(err));
+        displayCart().then(() => console.log('produit affichié')).catch((err) => console.log(err));
         total().catch((err) => console.log(err));
         setTimeout(() => {
             removeProductInCart().catch((err) => console.log(err));
@@ -115,9 +115,8 @@ async function removeProductInCart() {
                         window.location.reload();
                     }
                     //debug
-                    console.log(`Produit id: ${storage[i].id} // color: ${storage[i].colors} supprimé `);
+                    console.log(`Produit remove => id: ${storage[i].id} // color: ${storage[i].colors} supprimé `);
                     console.log(storage);
-
                 }
             }
         });
@@ -126,13 +125,14 @@ async function removeProductInCart() {
 
 async function updateQuantity() {
     const inputQty = document.querySelectorAll('input.itemQuantity');
-    console.log(inputQty);
     for (let input of inputQty) {
         //get id & color of product click
         input.addEventListener('change', (e) => {
             const id = e.target.parentNode.parentNode.parentNode.parentNode.dataset.id;
             const color = e.target.parentNode.parentNode.parentNode.parentNode.dataset.color;
-            const qty = e.target.value;
+            const qty = e.target.value
+            //debug
+            console.log(`product quantity edit // qty: ${qty}`);
             for (let i = 0; i < storage.length; i++) {
                 //if id & color are the same in storage & input => update quantity in storage
                 if (storage[i].id === id && storage[i].colors === color) {
@@ -160,75 +160,84 @@ function validateForm() {
 
         input.addEventListener('input', () => {
             validation(input);
+
         })
     })
     for (let form of formQuestion) {
-        console.log(form);
         valid = !(form.value === "" || form.classList.contains('error'));
         if (!valid) {
+            console.log(form.value);
             break;
         }
     }
-    console.log(valid);
-
+    console.log(valid)
     return valid;
 }
 
 function validation(input) {
     const regexFirstName = new RegExp(/^([a-zA-ZÀ-ÿ]{2,26})(-[a-zA-ZÀ-ÿ]{2,26})?(\s[a-zA-ZÀ-ÿ]{2,26})?$/, 'g')
     const regexLastName = new RegExp(/^([a-zA-ZÀ-ÿ]{2,26})(-[a-zA-ZÀ-ÿ]{2,26})?(\s[a-zA-ZÀ-ÿ]{2,26})?$/, 'g')
-    const regexAddress = new RegExp(/^([a-zA-ZÀ-ÿ0-9]{2,26})(-[a-zA-ZÀ-ÿ0-9]{2,26})?(\s[a-zA-ZÀ-ÿ0-9]{2,26})?$/, 'g')
+    const regexAddress = new RegExp(/^([a-zA-ZÀ-ÿ0-9]{2,26})(-[a-zA-ZÀ-ÿ]{2,26})?(\s[a-zA-ZÀ-ÿ]{2,26})?$/, 'g')
     const regexCity = new RegExp(/^([a-zA-ZÀ-ÿ]{2,26})(-[a-zA-ZÀ-ÿ]{2,26})?(\s[a-zA-ZÀ-ÿ]{2,26})?$/, 'g')
-    const regexEmail = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, 'g')
+    const regexEmail = new RegExp(/[A-z0-9._-]+[@]{1}[a-zA-Z0-9._-]+[.]{1}[a-zA-Z]{2,10}/gm, 'g')
 
     const err = input.nextElementSibling
 
-    if (input.name === 'firstName') {
-        if (regexFirstName.test(input.value)) {
-            input.classList.remove('error');
-            err.classList.remove('error');
-        } else {
-            input.classList.add('error');
-            err.classList.add('error');
-        }
-    } else if (input.name === 'lastName') {
-        if (regexLastName.test(input.value)) {
-            input.classList.remove('error');
-            err.classList.remove('error');
-        } else {
-            input.classList.add('error');
-            err.classList.add('error');
-        }
-    } else if (input.name === 'address') {
-        if (regexAddress.test(input.value)) {
-            input.classList.remove('error');
-            err.classList.remove('error');
-        } else {
-            input.classList.add('error');
-            err.classList.add('error');
-        }
-    } else if (input.name === 'city') {
-        if (regexCity.test(input.value)) {
-            input.classList.remove('error');
-            err.classList.remove('error');
-        } else {
-            input.classList.add('error');
-            err.classList.add('error');
-        }
-    } else if (input.name === 'email') {
-        if (regexEmail.test(input.value)) {
-            input.classList.remove('error');
-            err.classList.remove('error');
-            console.log('ok');
-        } else {
-            console.log('form pas ok');
-            input.classList.add('error');
-            err.classList.add('error');
-        }
-    } else {
-        input.classList.add('error');
-        err.classList.add('error');
+    switch (input.name) {
+        case 'firstName':
+            if (regexFirstName.test(input.value)) {
+                err.textContent = "";
+                input.classList.remove('error');
+            } else {
+                err.textContent = "Veuillez entrer un prénom valide (2 à 26 caractères)";
+                input.classList.add('error');
+                break;
+            }
+            break;
+        case 'lastName':
+            if (regexLastName.test(input.value)) {
+                err.textContent = "";
+                input.classList.remove('error');
+            } else {
+                err.textContent = "Veuillez entrer un nom valide (2 à 26 caractères)";
+                input.classList.add('error');
+                break;
+            }
+            break;
+        case 'address':
+            if (regexAddress.test(input.value)) {
+                err.textContent = "";
+                input.classList.remove('error');
+            } else {
+                err.textContent = "Veuillez entrer une adresse valide (2 à 26 caractères)";
+                input.classList.add('error');
+                break;
+            }
+            break;
+        case 'city':
+            if (regexCity.test(input.value)) {
+                err.textContent = "";
+                input.classList.remove('error');
+            } else {
+                err.textContent = "Veuillez entrer une ville valide (2 à 26 caractères)";
+                input.classList.add('error');
+                break;
+            }
+            break;
+        case 'email':
+            if (regexEmail.test(input.value)) {
+                err.textContent = "";
+                input.classList.remove('error');
+            } else {
+                err.textContent = "Veuillez entrer un email valide (test@gmail.com)";
+                input.classList.add('error');
+                break;
+            }
+            break;
+            default:
+                break;
     }
+
 }
 
 function getLocalStorage() {
