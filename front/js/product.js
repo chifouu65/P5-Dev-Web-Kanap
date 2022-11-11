@@ -43,7 +43,6 @@ class Product {
         });
         // injection in html
         document.querySelector('#colors').innerHTML = colorRender;
-
         //debug
         console.log(`product data : ${data._id},name: ${data.name}, price: ${data.price}, description: ${data.description}, image: ${data.imageUrl}, alt: ${data.altTxt}`);
     };
