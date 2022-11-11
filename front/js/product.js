@@ -80,19 +80,19 @@ class Product {
                         } else {
                             cart[index].quantity += select.quantity;
                             localStorage.setItem('orders', JSON.stringify(cart));
-                            alert('Product edit to cart');
+                            console.log('product edit to cart');
                         }
                     } else {
                         cart.push(select);
                     }
                     //debug
+                    alert('Product add to cart');
                     console.log('Push product to cart');
                     localStorage.setItem('orders', JSON.stringify(cart));
                 } else {
                     const cart = [];
                     cart.push(select);
                     localStorage.setItem('orders', JSON.stringify(cart));
-                    alert('Product add to cart');
                 }
 
             }
