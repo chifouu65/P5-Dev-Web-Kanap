@@ -126,8 +126,9 @@ async function removeProductInCart() {
 async function updateQuantity() {
     const inputQty = document.querySelectorAll('input.itemQuantity');
     for (let input of inputQty) {
-        //get id & color of product click
+        //add event on all input with class itemQuantity
         input.addEventListener('change', (e) => {
+            //get product id colors & quantity in input
             const id = e.target.parentNode.parentNode.parentNode.parentNode.dataset.id;
             const color = e.target.parentNode.parentNode.parentNode.parentNode.dataset.color;
             const qty = e.target.value
