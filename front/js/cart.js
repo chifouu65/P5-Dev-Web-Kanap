@@ -1,4 +1,5 @@
 const storage = JSON.parse(localStorage.getItem('orders'));
+let valid = false;
 
 //request data from api
 async function getProductData(id) {
@@ -152,26 +153,24 @@ async function updateQuantity() {
     }
 }
 
-function validateForm() {
-    const formQuestion = document.querySelectorAll('.cart__order__form__question input');
-    let valid = false;
-
-    formQuestion.forEach((input) => {
+const formQuestion = document.querySelectorAll('.cart__order__form__question input');
+formQuestion.forEach((input) => {
+    input.addEventListener('change', () => {
         validation(input);
-
-        input.addEventListener('input', () => {
-            validation(input);
-
-        })
     })
+})
+
+function validateForm() {
     for (let form of formQuestion) {
         valid = !(form.value === "" || form.classList.contains('error'));
         if (!valid) {
-            console.log(form.value);
+            valid = false;
             break;
+        } else {
+            valid = true;
         }
     }
-    console.log(valid)
+    console.log('formulaire valide : ' + valid)
     return valid;
 }
 
@@ -181,64 +180,38 @@ function validation(input) {
     const regexAddress = new RegExp(/^([0-9]{0,2}(^| ?)[a-zA-ZÀ-ÿ]{2,26})/, 'g')
     const regexCity = new RegExp(/^([a-zA-ZÀ-ÿ]{2,26})(-[a-zA-ZÀ-ÿ]{2,26})?(\s[a-zA-ZÀ-ÿ]{2,26})?$/, 'g')
     const regexEmail = new RegExp(/[A-z0-9._-]+[@]{1}[a-zA-Z0-9._-]+[.]{1}[a-zA-Z]{2,10}/gm, 'g')
-
     const err = input.nextElementSibling
 
+    const check = (input, regex) => {
+        if (regex.test(input.value)) {
+            err.textContent = "Validé";
+            input.classList.remove('error');
+        } else {
+            err.textContent = `Non valid ${input.name}`;
+            input.classList.add('error');
+        }
+    }
     switch (input.name) {
         case 'firstName':
-            if (regexFirstName.test(input.value)) {
-                err.textContent = "";
-                input.classList.remove('error');
-            } else {
-                err.textContent = "Veuillez entrer un prénom valide (2 à 26 caractères)";
-                input.classList.add('error');
-                break;
-            }
+            check(input, regexFirstName);
             break;
         case 'lastName':
-            if (regexLastName.test(input.value)) {
-                err.textContent = "";
-                input.classList.remove('error');
-            } else {
-                err.textContent = "Veuillez entrer un nom valide (2 à 26 caractères)";
-                input.classList.add('error');
-                break;
-            }
+            check(input, regexLastName);
             break;
         case 'address':
-            if (regexAddress.test(input.value)) {
-                err.textContent = "";
-                input.classList.remove('error');
-            } else {
-                err.textContent = "Veuillez entrer une adresse valide (2 à 26 caractères)";
-                input.classList.add('error');
-                break;
-            }
+            check(input, regexAddress);
             break;
         case 'city':
-            if (regexCity.test(input.value)) {
-                err.textContent = "";
-                input.classList.remove('error');
-            } else {
-                err.textContent = "Veuillez entrer une ville valide (2 à 26 caractères)";
-                input.classList.add('error');
-                break;
-            }
+            check(input, regexCity);
             break;
         case 'email':
-            if (regexEmail.test(input.value)) {
-                err.textContent = "";
-                input.classList.remove('error');
-            } else {
-                err.textContent = "Veuillez entrer un email valide (test@gmail.com)";
-                input.classList.add('error');
-                break;
-            }
+            check(input, regexEmail);
             break;
             default:
-                break;
+            break;
     }
 
+    console.log('formulaire valide : ' +valid)
 }
 
 function getLocalStorage() {
@@ -288,13 +261,14 @@ function sendDataOrder(data) {
                     "products": cart
                 })
                 const response = await sendDataOrder(dataToSend);
-                console.log(response);
-
                 if (response) {
                     localStorage.clear();
                     window.location.href = `confirmation.html?orderId=${response.orderId}`;
                 }
 
+                //debug
+                console.log(dataToSend);
+                console.log("Panier => " + cart);
             } else {
                 alert("Votre panier est vide");
             }
