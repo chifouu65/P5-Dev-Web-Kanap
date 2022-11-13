@@ -4,8 +4,8 @@ async function load() {
 }
 
 class Product {
-    constructor(Id, color, quantity) {
-        this.id = Id;
+    constructor(id, color, quantity) {
+        this.id = id;
         this.colors = color;
         this.quantity = quantity;
     };
@@ -21,9 +21,9 @@ class Product {
     };
 
     static async getProductData() {
-        const Id = Product.getId();
+        const id = Product.getId();
         try {
-            const response = await fetch(`http://localhost:3000/api/products/${Id}`);
+            const response = await fetch(`http://localhost:3000/api/products/${id}`);
             return response.json();
         } catch (e) {
             alert("Error " + e);
