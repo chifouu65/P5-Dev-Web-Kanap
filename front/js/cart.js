@@ -115,7 +115,7 @@ async function removeProductInCart() {
                         window.location.reload();
                     }
                     //debug
-                    console.log(`Produit remove => id: ${storage[i].id} // color: ${storage[i].colors} supprimé `);
+                    console.log(`Produit remove : ${id} - ${color}`);
                     console.log(storage);
                 }
             }
@@ -133,7 +133,7 @@ async function updateQuantity() {
             const color = e.target.parentNode.parentNode.parentNode.parentNode.dataset.color;
             const qty = e.target.value
             //debug
-            console.log(`product quantity edit // qty: ${qty}`);
+            console.log(`product quantity edit // qty: ${qty} - id: ${id} - color: ${color}`);
             for (let i = 0; i < storage.length; i++) {
                 //if id & color are the same in storage & input => update quantity in storage
                 if (storage[i].id === id && storage[i].colors === color) {
