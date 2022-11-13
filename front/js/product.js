@@ -100,5 +100,5 @@ class Product {
 }
 
 
-load().then(() => console.log("Page loaded")).catch(e => console.log(e));
+load().catch(e => console.log(e));
 
