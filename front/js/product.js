@@ -72,6 +72,7 @@ class Product {
                 if (localStorage.getItem('orders')) {
                     const cart = JSON.parse(localStorage.getItem('orders'));
                     const index = cart.findIndex(item => item.id === select.id && item.colors === select.colors);
+                    //check if product is already in cart if yes add quantity and update cart else add product to cart
                     if (index > -1) {
                         //check if quantity is > 100 if yes alert else add quantity and update cart
                         if (cart[index].quantity + select.quantity > max) {
@@ -79,19 +80,29 @@ class Product {
                         } else {
                             cart[index].quantity += select.quantity;
                             localStorage.setItem('orders', JSON.stringify(cart));
-                            console.log('product edit to cart');
+
+                            //debug
+                            console.log(cart[index])
+                            alert('product already in cart, quantity updated : ' + cart[index].quantity);
                         }
                     } else {
                         cart.push(select);
+                        localStorage.setItem('orders', JSON.stringify(cart));
+
+                        //debug
+                        alert('Product added to cart');
                     }
-                    //debug
-                    alert('Product add to cart');
-                    console.log('Push product to cart');
                     localStorage.setItem('orders', JSON.stringify(cart));
-                } else {
+
+                    //debug
+                    console.log('Push to cart');
+                } else if (localStorage.getItem('orders') === null) {
                     const cart = [];
                     cart.push(select);
                     localStorage.setItem('orders', JSON.stringify(cart));
+
+                    //debug
+                    alert('Product add to cart (first product)');
                 }
 
             }
