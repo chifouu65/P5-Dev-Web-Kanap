@@ -63,53 +63,28 @@ class Product {
                 selectedColor.value,
                 Number(quantity)
             );
-            console.log(select);
             //check input size if is > 100 or < 1 yes alert else add to cart
             if (quantity > max || quantity < min) {
                 alert('Quantity must be between 1 and 100');
             } else {
-                //check if  product is already in cart if yes add quantity and update cart else add product to cart
-                if (localStorage.getItem('orders')) {
-                    const cart = JSON.parse(localStorage.getItem('orders'));
-                    const index = cart.findIndex(item => item.id === select.id && item.colors === select.colors);
-                    //check if product is already in cart if yes add quantity and update cart else add product to cart
-                    if (index > -1) {
-                        //check if quantity is > 100 if yes alert else add quantity and update cart
-                        if (cart[index].quantity + select.quantity > max) {
-                            alert('Quantity max = 100' + ' ' + ', Quantity in cart = ' + cart[index].quantity);
-                        } else {
-                            cart[index].quantity += select.quantity;
-                            localStorage.setItem('orders', JSON.stringify(cart));
-
-                            //debug
-                            console.log(cart[index])
-                            alert('product already in cart, quantity updated : ' + cart[index].quantity);
-                        }
-                    } else {
-                        cart.push(select);
-                        localStorage.setItem('orders', JSON.stringify(cart));
-
-                        //debug
-                        alert('Product added to cart');
-                    }
-                    localStorage.setItem('orders', JSON.stringify(cart));
-
+                const cart = JSON.parse(localStorage.getItem('orders'));
+                const product = cart.find(item => item.id === select.id && item.colors === select.colors);
+                //check if product is already in cart and update quantity
+                if (product) {
+                    product.quantity += select.quantity;
                     //debug
-                    console.log('Push to cart');
-                } else if (localStorage.getItem('orders') === null) {
-                    const cart = [];
+                    alert('Product already in cart, quantity updated : ' + product.quantity);
+                } else {
                     cart.push(select);
-                    localStorage.setItem('orders', JSON.stringify(cart));
-
                     //debug
-                    alert('Product add to cart (first product)');
+                    alert('Product added to cart');
                 }
-
+                //push in localStorage
+                localStorage.setItem('orders', JSON.stringify(cart));
             }
         });
     };
 }
-
 
 load().catch(e => console.log(e));
 
