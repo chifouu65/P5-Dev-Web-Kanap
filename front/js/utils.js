@@ -1,6 +1,4 @@
-/**
- * inspiration : https://github.com/lecturenotes/localstorage-manager/blob/master/js/localstorage-manager.js
- */
+
 export class LocalStorageManager {
     constructor(id, quantity) {
         this.id = id;
