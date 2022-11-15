@@ -1,4 +1,4 @@
-import {getApi} from "./utils.js";
+import {getApi, createHtmlElement} from "./utils.js";
 
 getApi().then(data => {
     displayProducts(data);
@@ -36,38 +36,5 @@ function displayProducts(products) {
         parent.appendChild(link);
         console.log(link);
     }
-}
-/**
- *
- * @param parent optional {HTMLElement} parent element
- * @param element required {HTMLElement} ex : 'div','p','a','img'
- * @param text optional {String} ex : 'lorem ipsum'
- * @param href optional {String} ex : 'http://www.google.com'
- * @param src optional {String} ex : 'http://www.google.com/image.jpg'
- * @param alt optional {String} ex : 'lorem ipsum'
- * @param classList optional {String} ex : 'lorem ipsum'
- * @returns {HTMLElement}
- * @description create an html element with text, href, src, alt, classList
- * @example                parent,     element, text,        href,                   src,                              alt,            classList
- *  EX: createHtmlElement(document.body,'div','lorem ipsum','http://www.google.com','http://www.google.com/image.jpg','lorem ipsum','lorem ipsum');
- */
-function createHtmlElement(parent, element, text, href, src, alt, classList) {
-    const emt = document.createElement(element);
-    //add params if exist in function
-    for (let i = 0; i < arguments.length; i++) {
-        if (arguments[i] !== null) {
-            emt.innerText = text;
-            emt.href = href;
-            emt.src = src;
-            emt.alt = alt;
-            emt.classList.add(classList);
-        }
-        if (parent) {
-            parent.appendChild(emt);
-        } else {
-            return emt;
-        }
-    }
-    return emt;
 }
 
