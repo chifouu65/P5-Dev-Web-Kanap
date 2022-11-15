@@ -1,4 +1,4 @@
-import {LocalStorageManager} from "./utils.js";
+import {getApi, LocalStorageManager} from "./utils.js";
 // Path: front\js\product.js
 // Compare this snippet from front\js\utils.js:
 //
@@ -54,7 +54,7 @@ class Product {
     };
 
     static async displayProduct() {
-        const data = await Product.getProductData();
+        const data = await getApi(Product.getId());
         document.querySelector('#title').textContent = data.name;
         document.querySelector('#price').textContent = data.price;
         document.querySelector('#description').textContent = data.description;
@@ -70,7 +70,7 @@ class Product {
     };
 
     static async addToCart() {
-        const productData = await Product.getProductData();
+        const productData = await getApi(Product.getId());
         //Dom elements get
         const btn = document.querySelector('#addToCart');
         const selectedColor = document.querySelector('#colors');

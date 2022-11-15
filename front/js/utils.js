@@ -19,11 +19,11 @@ export class LocalStorageManager {
         let cart = LocalStorageManager.getOrders;
         cart.find(item => item.id === select.id && item.colors === select.colors);
     }
-    //remove all local storage
-    static clearAll = function () {
-        localStorage.clear();
+    //set localstorage empty array
+    static clearAll() {
+        //better to remove
+        localStorage.setItem('orders', JSON.stringify([]));
     }
-
 }
 
 /**

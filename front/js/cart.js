@@ -5,7 +5,7 @@ const storage = LocalStorageManager.getOrders;
 let valid = false;
 
 
-if (storage === null) {
+if (storage.length === 0) {
     empty();
 } else {
     getApi()
