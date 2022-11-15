@@ -1,30 +1,29 @@
-const storage = JSON.parse(localStorage.getItem('orders'));
+import {ApiManager, LocalStorageManager} from "./utils.js";
+import {getApi} from "./utils.js";
+
+const storage = LocalStorageManager.getOrders;
 let valid = false;
 
-//request data from api
-async function getProductData(id) {
-    try {
-        const response = await fetch(`http://localhost:3000/api/products/${id}`);
-        return response.json();
-    } catch (e) {
-        alert("Error " + e);
-    }
+
+if (storage === null) {
+    empty();
+} else {
+    getApi()
+        .then(() => {
+            displayCart().catch((err) => console.log(err));
+            //Add event after render
+            setTimeout(() => {
+                removeProductInCart().catch((err) => console.log(err));
+                updateQuantity().catch((err) => console.log(err));
+                total().catch((err) => console.log(err));
+            }, 1000);
+        }).catch(error => {
+        console.log(error);
+    });
 }
 
-//control page
-(function load() {
-    if (storage == null || storage.length === 0) {
-        empty().catch((err) => console.log(err));
-    } else if (storage !== 0) {
-        //si il n'est pas vide
-        displayCart().then(() => console.log('produit affichié')).catch((err) => console.log(err));
-        total().catch((err) => console.log(err));
-        setTimeout(() => {
-            removeProductInCart().catch((err) => console.log(err));
-            updateQuantity().catch((err) => console.log(err));
-        }, 1000);
-    }
-})();
+let price = document.querySelector('#totalPrice')
+let quantity = document.querySelector('#totalQuantity');
 
 //get total price & total quantity articles
 async function total() {
@@ -34,37 +33,31 @@ async function total() {
     if (storage !== 0) {
         for (let item of storage) {
             qty += Number(item.quantity);
-            const data = await getProductData(item.id);
+            const data = await getApi(item.id);
             add = item.quantity * data.price;
             amt += add;
         }
     }
-    document.querySelector('#totalQuantity').innerHTML = qty;
-    document.querySelector('#totalPrice').innerHTML = amt;
+    quantity.innerHTML = qty;
+    price.innerHTML = amt;
 }
 
-async function empty() {
-    document.querySelector('#empty').innerHTML = `<p>Votre panier est vide :( <br/><a href="index.html">Home</a></p>`;
+function empty() {
     document.querySelector('.cart').hidden = true;
+    document.querySelector('#empty').innerHTML = `Votre panier est vide :( <br/><a href="index.html">Home</a>`;
 }
 
 async function displayCart() {
     let render = "";
     for (let item of storage) {
-        //check size of product
-        if (item.quantity >= 1 && item.quantity <= 100) {
-            item.quantity = Number(item.quantity);
-        } else if (item.quantity > 100) {
-            //if quantity > 100 => set quantity = 100
-           item.quantity = 100;
-            localStorage.setItem('orders', JSON.stringify(storage));
-        } else {
-            //if quantity < 1 => set quantity = 1
+        //check size of product if over 100 => display 100 if is < 1 => display 1
+        if (item.quantity > 100) {
+            item.quantity = 100;
+        } else if (item.quantity < 1) {
             item.quantity = 1;
-            localStorage.setItem('orders', JSON.stringify(storage));
         }
 
-        const data = await getProductData(item.id);
+        const data = await getApi(item.id);
 
         const htmlRender = `      
            <article class="cart__item" data-id="${item.id}" data-color="${item.colors}">
@@ -99,25 +92,28 @@ async function removeProductInCart() {
     for (let btn of btnDelete) {
         btn.addEventListener('click', (e) => {
             //get id & color of product click
-            const id = e.target.parentNode.parentNode.parentNode.parentNode.dataset.id;
-            const color = e.target.parentNode.parentNode.parentNode.parentNode.dataset.color;
+            let parent = e.target.parentNode.parentNode.parentNode.parentNode
+            const id = parent.dataset.id;
+            const color = parent.dataset.color;
             //remove product in storage
             //reload page if cart is empty
             for (let i = 0; i < storage.length; i++) {
                 //if id & color are the same in storage & input => remove product in storage
                 if (storage[i].id === id && storage[i].colors === color) {
                     storage.splice(i, 1);
-                    localStorage.setItem('orders', JSON.stringify(storage));
-                    const article = e.target.parentNode.parentNode.parentNode.parentNode;
+                    LocalStorageManager.setOrders(storage);
+                    const article = parent;
                     article.remove();
                     total().catch((err) => console.log(err));
                     //reload page if cart is empty
-                    if (storage.length === 0) {
-                        window.location.reload();
-                    }
+
                     //debug
                     console.log(`Produit remove : ${id} - ${color}`);
                     console.log(storage);
+
+                    if (storage.length === 0) {
+                        window.location.reload();
+                    }
                 }
             }
         });
@@ -130,19 +126,20 @@ async function updateQuantity() {
         //add event on all input with class itemQuantity
         input.addEventListener('change', (e) => {
             //get product id colors & quantity in input
-            const id = e.target.parentNode.parentNode.parentNode.parentNode.dataset.id;
-            const color = e.target.parentNode.parentNode.parentNode.parentNode.dataset.color;
+            let parent = e.target.parentNode.parentNode.parentNode.parentNode
+            const id = parent.dataset.id;
+            const color = parent.dataset.color;
             const qty = e.target.value
             //debug
-            console.log(`product quantity edit // qty: ${qty} - id: ${id} - color: ${color}`);
             for (let i = 0; i < storage.length; i++) {
                 //if id & color are the same in storage & input => update quantity in storage
                 if (storage[i].id === id && storage[i].colors === color) {
                     //check if value is between 1 & 100
                     if (qty >= 1 && qty <= 100) {
                         storage[i].quantity = qty;
-                        localStorage.setItem('orders', JSON.stringify(storage));
-                        total().catch((err) => console.log(err));
+                        LocalStorageManager.setOrders(storage);
+                        total();
+                        console.log(storage[i]);
                     } else {
                         alert("La quantité doit être comprise entre 1 et 100");
                         e.target.value = storage[i].quantity;
@@ -207,32 +204,11 @@ function validation(input) {
         case 'email':
             check(input, regexEmail);
             break;
-            default:
+        default:
             break;
     }
 
-    console.log('formulaire valide : ' +valid)
-}
-
-function getLocalStorage() {
-    let ordersInLocalStorage = localStorage.getItem("orders")
-
-    return ordersInLocalStorage != null ? JSON.parse(ordersInLocalStorage) : []
-}
-
-function sendDataOrder(data) {
-    return fetch('http://localhost:3000/api/products/order', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: data
-    }).then(res => {
-        if (res.ok) {
-            return res.json();
-        }
-    }).catch(err => console.log(err));
+    console.log('formulaire valide : ' + valid)
 }
 
 (async function sendOrder() {
@@ -252,23 +228,26 @@ function sendDataOrder(data) {
                 city: document.getElementById('city').value,
                 email: document.getElementById('email').value
             }
-            const products = getLocalStorage();
+            const products = LocalStorageManager.getOrders;
 
             if (products.length > 0) {
                 let cart = products.map((product) => product.id);
                 const dataToSend = JSON.stringify({
                     "contact": contact,
-                    "products": cart
+                    "products": [...cart]
                 })
-                const response = await sendDataOrder(dataToSend);
+                const response = await ApiManager("http://localhost:3000/api/products/order", "POST", dataToSend);
                 if (response) {
-                    localStorage.clear();
-                    window.location.href = `confirmation.html?orderId=${response.orderId}`;
+                    response.quantity = products.length;
+                    response.total = await total();
+                    window.location.href = `confirmation.html?orderId=${response.orderId}&ProductQuantity=${response.quantity}`;
                 }
 
                 //debug
                 console.log(dataToSend);
-                console.log("Panier => " + cart);
+                for (let i = 0; i < products.length; i++) {
+                    console.log('Procuct n#'+i+ ' ' +products[i].id, ' ',  products[i].colors, ' ', products[i].quantity);
+                }
             } else {
                 alert("Votre panier est vide");
             }

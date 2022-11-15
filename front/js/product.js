@@ -1,3 +1,26 @@
+import {LocalStorageManager} from "./utils.js";
+// Path: front\js\product.js
+// Compare this snippet from front\js\utils.js:
+//
+//
+// export class LocalStorageManager {
+//   constructor(id, color, quantity) {
+//     this.id = id;
+//     this.color = color;
+//     this.quantity = quantity;
+//   }
+//
+//   getOrder = JSON.parse(localStorage.getItem('orders'));
+//
+// }
+//get orders
+let cart = LocalStorageManager.getOrders;
+//
+//if cart is null set [] to cart
+if (cart === null) {
+    cart = [];
+}
+
 async function load() {
     await Product.addToCart();
     await Product.displayProduct();
@@ -44,47 +67,61 @@ class Product {
         // injection in html
         document.querySelector('#colors').innerHTML = colorRender;
         //debug
-        console.log(`product data : ${data._id},name: ${data.name}, price: ${data.price}, description: ${data.description}, image: ${data.imageUrl}, alt: ${data.altTxt}`);
     };
 
     static async addToCart() {
         const productData = await Product.getProductData();
+        //Dom elements get
         const btn = document.querySelector('#addToCart');
         const selectedColor = document.querySelector('#colors');
         const selectedQuantity = document.querySelector('#quantity');
-
+        //Btn event on Click add to cart or update cart and save in local storage
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             const max = 100;
             const min = 1;
             const quantity = selectedQuantity.value;
+            let minMax = quantity > max || quantity < min;
+            //schema validation for quantity
             const select = new Product(
                 productData._id,
                 selectedColor.value,
                 Number(quantity)
             );
-            //check input size if is > 100 or < 1 yes alert else add to cart
-            if (quantity > max || quantity < min) {
-                alert('Quantity must be between 1 and 100');
-            } else {
-                const cart = JSON.parse(localStorage.getItem('orders'));
+            if (minMax) return alert('Quantity must be between 1 and 100');
+            else
+            {
+                /* Check **
+                **IF (Product is already in cart)**
+                if product.id, product.colors === select.id ,select.colors
+                Add select.quantity to product.quantity
+                **ELSE ()**
+                * add product to cart
+                *****
+                *   ==> PUSH Response to cart
+                *****/
+
                 const product = cart.find(item => item.id === select.id && item.colors === select.colors);
                 //check if product is already in cart and update quantity
                 if (product) {
-                    product.quantity += select.quantity;
-                    //debug
-                    alert('Product already in cart, quantity updated : ' + product.quantity);
+                    //check if quantity is not over 100
+                    // (yes == alert)
+                    if (product.quantity + select.quantity > 100) {
+                        alert('Quantity is over 100');
+                    } else {
+                        product.quantity += select.quantity;
+                        alert('Product already in cart, quantity updated : ' + product.quantity);
+                    }
                 } else {
                     cart.push(select);
                     //debug
                     alert('Product added to cart');
                 }
-                //push in localStorage
-                localStorage.setItem('orders', JSON.stringify(cart));
+                //Save response in localStorage
+                LocalStorageManager.setOrders(cart);
             }
         });
     };
 }
-
 load().catch(e => console.log(e));
 
