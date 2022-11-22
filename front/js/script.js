@@ -22,19 +22,21 @@ function displayProducts(products) {
      *   </a>
      */
     const parent = document.getElementById("items");
+    //itération sur le tableau de produits
     for (let product of products) {
         const link = createHtmlElement(parent, 'a', null, `./product.html?id=${product._id}`, null, null, null);
         const article = createHtmlElement(link, 'article', null, null, null, null, null);
         createHtmlElement(article, 'img', null, null, product.imageUrl, product.altTxt);
         createHtmlElement(article, 'h3', product.name, null, null, null, 'productName');
         createHtmlElement(article, 'p', product.description, null, null, null, 'productDescription');
+        //itération pour afficher les couleurs
         for (let i = 0; i < 3; i++) {
             const p = document.createElement('p');
             article.appendChild(p);
             p.textContent = product.colors[i];
         }
+        //display element in html page (parent)
         parent.appendChild(link);
-        console.log(link);
     }
 }
 

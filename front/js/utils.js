@@ -4,15 +4,10 @@ export class LocalStorageManager {
         this.id = id;
         this.quantity = quantity;
     }
-
     static getOrders = JSON.parse(localStorage.getItem('orders'));
-
-
     static setOrders(orders) {
         localStorage.setItem('orders', JSON.stringify(orders));
     }
-
-
     static find(select) {
         let cart = LocalStorageManager.getOrders;
         cart.find(item => item.id === select.id && item.colors === select.colors);

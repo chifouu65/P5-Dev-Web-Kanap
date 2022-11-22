@@ -171,14 +171,22 @@ function validateForm() {
     return valid;
 }
 
+/**
+ * @param {HTMLElement} input
+ * @param input
+ */
 function validation(input) {
     const regexFirstName = new RegExp(/^([a-zA-ZÀ-ÿ]{2,26})(-[a-zA-ZÀ-ÿ]{2,26})?(\s[a-zA-ZÀ-ÿ]{2,26})?$/, 'g')
     const regexLastName = new RegExp(/^([a-zA-ZÀ-ÿ]{2,26})(-[a-zA-ZÀ-ÿ]{2,26})?(\s[a-zA-ZÀ-ÿ]{2,26})?$/, 'g')
     const regexAddress = new RegExp(/^([0-9]{0,2}(^| ?)[a-zA-ZÀ-ÿ]{2,26})/, 'g')
     const regexCity = new RegExp(/^([a-zA-ZÀ-ÿ]{2,26})(-[a-zA-ZÀ-ÿ]{2,26})?(\s[a-zA-ZÀ-ÿ]{2,26})?$/, 'g')
     const regexEmail = new RegExp(/[A-z0-9._-]+[@]{1}[a-zA-Z0-9._-]+[.]{1}[a-zA-Z]{2,10}/gm, 'g')
-    const err = input.nextElementSibling
 
+    const err = input.nextElementSibling
+    /**Function for check Input value with regex
+     * @param {HTMLElement} input
+     * @param regex {RegExp} regex for check input value
+     */
     const check = (input, regex) => {
         if (regex.test(input.value)) {
             err.textContent = "Validé";
@@ -188,6 +196,10 @@ function validation(input) {
             input.classList.add('error');
         }
     }
+
+    /**switch use function check with regex for value input
+     * @param {HTMLElement} input
+     */
     switch (input.name) {
         case 'firstName':
             check(input, regexFirstName);
@@ -207,8 +219,6 @@ function validation(input) {
         default:
             break;
     }
-
-    console.log('formulaire valide : ' + valid)
 }
 
 (async function sendOrder() {
@@ -241,12 +251,6 @@ function validation(input) {
                     response.quantity = products.length;
                     response.total = await total();
                     window.location.href = `confirmation.html?orderId=${response.orderId}&ProductQuantity=${response.quantity}`;
-                }
-
-                //debug
-                console.log(dataToSend);
-                for (let i = 0; i < products.length; i++) {
-                    console.log('Procuct n#'+i+ ' ' +products[i].id, ' ',  products[i].colors, ' ', products[i].quantity);
                 }
             } else {
                 alert("Votre panier est vide");
