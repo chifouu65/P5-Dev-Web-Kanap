@@ -250,7 +250,7 @@ function validation(input) {
                 if (response) {
                     response.quantity = products.length;
                     response.total = await total();
-                    window.location.href = `confirmation.html?orderId=${response.orderId}&ProductQuantity=${response.quantity}`;
+                    window.location.href = `confirmation.html?orderId=${response.orderId}`;
                 }
             } else {
                 alert("Votre panier est vide");
