@@ -106,11 +106,8 @@ async function removeProductInCart() {
                     article.remove();
                     total().catch((err) => console.log(err));
                     //reload page if cart is empty
-
                     //debug
                     console.log(`Produit remove : ${id} - ${color}`);
-                    console.log(storage);
-
                     if (storage.length === 0) {
                         window.location.reload();
                     }
@@ -139,7 +136,7 @@ async function updateQuantity() {
                         storage[i].quantity = qty;
                         LocalStorageManager.setOrders(storage);
                         total();
-                        console.log(storage[i]);
+                        console.log(storage[i].quantity);
                     } else {
                         alert("La quantité doit être comprise entre 1 et 100");
                         e.target.value = storage[i].quantity;
@@ -167,7 +164,6 @@ function validateForm() {
             valid = true;
         }
     }
-    console.log('formulaire valide : ' + valid)
     return valid;
 }
 
@@ -257,5 +253,4 @@ function validation(input) {
             }
         }
     })
-
 })();
