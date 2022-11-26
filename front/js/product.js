@@ -68,33 +68,33 @@ class Product {
                 Number(quantity)
             );
             if (minMax) return alert('Quantity must be between 1 and 100');
-            else
-            {
-                //check if product is already in cart with same color and id
-                const product = cart.find(
-                    item => item.id === select.id &&
-                        item.colors === select.colors
+            else {
+                //check if product is already in cart (LocalStorage) with same color and id
+                const product = cart.find(item =>
+                    item.id === select.id &&
+                    item.colors === select.colors
                 );
                 //if product is already in cart update quantity
                 if (product) {
                     //check if quantity is not over 100
                     // (yes == alert)
-                    if (product.quantity + select.quantity > 100) {
-                        alert('Quantity is over 100');
+                    if (product.quantity + select.quantity > max) {
+                        return alert('Quantity is over 100');;
                     } else {
                         product.quantity += select.quantity;
                         alert('Product already in cart, quantity updated : ' + product.quantity);
                     }
-                    //else add product to cart
+                    //else if product is not in cart add product to cart
                 } else {
                     cart.push(select);
                     alert('Product added to cart');
                 }
-                //Save or update in localStorage
+                //Push cart in local storage
                 LocalStorageManager.setOrders(cart);
             }
         });
     };
 }
+
 load().catch(e => console.log(e));
 

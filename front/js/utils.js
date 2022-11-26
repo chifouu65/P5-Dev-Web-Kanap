@@ -65,7 +65,6 @@ export const getApi = async (id) => {
     }
     return fetch(url)
         .then(res => res.json())
-
 }
 
 /**
